@@ -368,22 +368,31 @@
   line-height: 3.5rem;
   /* The FIRST font decides where the baseline lands (see "Mehr Line" in globals.css): Urdu sits 5px above the rule, like English. */
   font-family: "Mehr Line", var(--write-font);
+  /* Baseline fix for text sizes. The "Mehr Line" ascent/descent overrides are percentages of the font size, so the
+     baseline drifts down as text grows and up as it shrinks. This nudges the line back by exactly that drift.
+     17.5px = (ascent 245% - descent 55%) / 2 * size-adjust 115% * 16px. If you change those numbers, change this. */
+  --urdu-k: 1;
+  position: relative;
+  top: calc(17.5px * var(--urdu-k) * (1 - var(--write-scale, 1)));
 }
 
 /* Urdu headings: smaller so they fit the 56px row, no tracking, no faux bold. */
 .note-editor .cm-line.cm-urdu-line.md-h1 {
+  --urdu-k: 1.25;
   font-size: calc(1.25rem * var(--write-scale, 1));
   font-weight: 400;
   letter-spacing: 0;
 }
 
 .note-editor .cm-line.cm-urdu-line.md-h2 {
+  --urdu-k: 1.125;
   font-size: calc(1.125rem * var(--write-scale, 1));
   font-weight: 400;
   letter-spacing: 0;
 }
 
 .note-editor .cm-line.cm-urdu-line.md-h3 {
+  --urdu-k: 1;
   font-size: calc(1rem * var(--write-scale, 1));
   font-weight: 400;
   letter-spacing: 0;
