@@ -6,8 +6,6 @@ import {
   Heading1,
   Heading2,
   Heading3,
-  IndentDecrease,
-  IndentIncrease,
   Italic,
   Link as LinkIcon,
   List,
@@ -19,7 +17,6 @@ import {
   RemoveFormatting,
   SquareCode,
   Strikethrough,
-  Table,
   Undo2,
   type LucideIcon,
 } from "lucide-react";
@@ -58,12 +55,7 @@ const GROUPS: readonly (readonly Tool[])[] = [
     { id: "quote", label: "Quote", icon: Quote },
   ],
   [
-    { id: "outdent", label: "Outdent list item", icon: IndentDecrease },
-    { id: "indent", label: "Indent list item", icon: IndentIncrease },
-  ],
-  [
     { id: "codeblock", label: "Code block", icon: SquareCode },
-    { id: "table", label: "Insert table", icon: Table },
     { id: "hr", label: "Horizontal rule", icon: Minus },
   ],
   [{ id: "clear", label: "Clear formatting", icon: RemoveFormatting }],

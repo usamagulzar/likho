@@ -56,7 +56,7 @@
 /* ---- Lists: hanging indent, so wrapped text lines up after the marker ---- */
 
 .note-editor .cm-line.md-list {
-  padding-left: calc(var(--lvl, 0) * 1.5em + 1.5em);
+  padding-inline-start: calc(var(--lvl, 0) * 1.5em + 1.5em);
   text-indent: -1.5em;
 }
 
@@ -75,12 +75,12 @@
 }
 
 .note-editor .md-marker-bullet {
-  padding-left: 0.25em;
+  padding-inline-start: 0.25em;
 }
 
 .note-editor .md-marker-ol {
-  text-align: left;
-  padding-right: 0;
+  text-align: start;
+  padding-inline-end: 0;
 }
 
 .note-editor .md-check {
@@ -90,7 +90,8 @@
   box-sizing: border-box;
   width: 16px;
   height: 16px;
-  margin: 0 8px 0 0;
+  margin: 0;
+  margin-inline-end: 8px;
   padding: 0;
   vertical-align: -3px;
   border: 1.5px solid var(--text-muted);
@@ -391,3 +392,4 @@
 .cm-content .cm-line[dir="rtl"] {
   text-align: start;
 }
+
