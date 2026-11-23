@@ -21,7 +21,7 @@
   padding-right: 1rem;
 }
 
-/* The title leaves room for the Save button. */
+/* The title uses the full width: Share and Save live in the bar above the sheet. */
 .pad-title-reserve {
   padding-right: 0;
 }
@@ -42,6 +42,6 @@
   }
 
   .pad-title-reserve {
-    padding-right: 9rem;
+    padding-right: 0;
   }
 }

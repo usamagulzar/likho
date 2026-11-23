@@ -11,10 +11,8 @@ const OPTIONS = [
 ] as const;
 
 /**
- * The English | اردو toggle and the keyboard-layout button. They sit inside the notebook, in the empty ruled row
- * between the title and the body, so they scroll with the page and never cover its buttons. Fill a positioned
- * parent of one ruled row (28px) with it: it lays itself out at the right edge, and the layout viewer drops down
- * from it.
+ * The English | اردو toggle and the keyboard-layout button. They sit in the bar under the formatting panel. Put it
+ * inside a `relative` flex bar: the layout viewer drops down from the bottom of that bar.
  */
 export function UrduToggle() {
   const on = useUrduOn();
@@ -24,10 +22,12 @@ export function UrduToggle() {
 
   return (
     <div
-      className="pointer-events-none absolute inset-0 flex items-center justify-end gap-1.5"
+      // display: contents, so the keyboard-layout panel positions against the parent bar (which is `relative`).
+      className="contents"
       // Keep the caret in the editor when these are clicked.
       onMouseDown={(event) => event.preventDefault()}
     >
+      <div className="flex items-center gap-1.5">
       <button
         type="button"
         aria-pressed={layoutOpen}
@@ -35,7 +35,7 @@ export function UrduToggle() {
         onClick={() => setLayoutOpen((open) => !open)}
         title={layoutOpen ? "Hide keyboard layout" : "Show keyboard layout"}
         className={cn(
-          "pointer-events-auto grid size-7 shrink-0 place-items-center rounded-full border outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring",
+          "grid size-7 shrink-0 place-items-center rounded-full border outline-none transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring",
           layoutOpen
             ? "border-brand bg-brand/15 text-foreground"
             : "border-border bg-canvas text-secondary-foreground hover:bg-hover hover:text-foreground",
@@ -52,7 +52,7 @@ export function UrduToggle() {
         role="radiogroup"
         aria-label="Typing language (Ctrl+Shift+U)"
         title="Typing language (Ctrl+Shift+U)"
-        className="pointer-events-auto relative grid h-7 shrink-0 grid-cols-2 rounded-full border border-border bg-canvas p-0.5 select-none"
+        className="relative grid h-7 shrink-0 grid-cols-2 rounded-full border border-border bg-canvas p-0.5 select-none"
       >
         {/* Sliding thumb: sits under the active side. */}
         <span
@@ -83,6 +83,7 @@ export function UrduToggle() {
             </button>
           );
         })}
+      </div>
       </div>
 
       {layoutOpen && <UrduLayoutPanel on={on} onType={typeAtCaret} onClose={closeLayout} />}

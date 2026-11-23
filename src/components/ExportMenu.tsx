@@ -22,7 +22,7 @@ interface ExportMenuProps {
   content: string;
 }
 
-/** The pad's save-as control. It sits in the bottom strip, left of the counter. */
+/** The pad's download control: a labelled button in the bottom strip, left of the counter. */
 export function ExportMenu({ content }: ExportMenuProps) {
   const [open, setOpen] = useState(false);
   const empty = content.trim() === "";
@@ -55,9 +55,10 @@ export function ExportMenu({ content }: ExportMenuProps) {
           title="Download note as a file"
           aria-label="Save note as a file"
           aria-disabled={empty || undefined}
-          className="pointer-events-auto pad-export grid shrink-0 place-items-center rounded-md text-muted-foreground outline-none transition-colors duration-150 hover:bg-hover hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-disabled:cursor-default aria-disabled:opacity-40 aria-disabled:hover:bg-transparent aria-disabled:hover:text-muted-foreground"
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border bg-canvas px-3 text-xs font-medium text-secondary-foreground shadow-xs outline-none transition-colors duration-150 hover:bg-hover hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring aria-disabled:cursor-default aria-disabled:opacity-50 aria-disabled:hover:bg-canvas aria-disabled:hover:text-secondary-foreground min-[768px]:h-7"
         >
-          <Icon icon={Download04Icon} />
+          <Icon icon={Download04Icon} className="size-4" />
+          <span>Download</span>
         </button>
       </PopoverTrigger>
       <PopoverContent

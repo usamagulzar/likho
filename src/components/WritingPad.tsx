@@ -26,7 +26,6 @@ import { Icon } from "@/components/Icon";
 import { SharePopover, type ShareController } from "@/components/share/SharePopover";
 import { SaveButton, useSaveAction } from "@/components/SaveButton";
 import { UrduToggle } from "@/components/UrduToggle";
-import { useWideScreen } from "@/components/useWideScreen";
 import "./WritingPad.css";
 import { cn } from "@/lib/utils";
 import { ARABIC_SCRIPT } from "@/lib/urdu/keymap";
@@ -87,7 +86,6 @@ interface WritingPadProps {
 }
 
 export function WritingPad({ store, handleRef, shareController }: WritingPadProps) {
-  const wide = useWideScreen();
   const titleRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<NoteEditorHandle>(null);
   // What the caret is inside right now (bold, a heading ...). The editor reports it; the toolbar lights its buttons.
@@ -242,6 +240,17 @@ export function WritingPad({ store, handleRef, shareController }: WritingPadProp
       {/* The formatting panel sits above the sheet, outside the scrolling part, so it is always in reach. */}
       <FormatToolbar state={formats} disabled={readOnly} onCommand={(id) => editorRef.current?.format(id)} />
 
+      {/* Second bar, same surface and rule as the formatting panel: typing language and keyboard layout on the left,
+          Share and Save on the right. They are part of the page chrome, not floating over the ruled sheet.
+          The keyboard layout panel drops down from this bar. Phones keep Share and Save in the top bar. */}
+      <div className="relative flex shrink-0 items-center justify-between gap-2 border-b border-border bg-pad px-3 py-1.5">
+        <UrduToggle />
+        <div className="shell-desk-only ml-auto items-center gap-2">
+          <SharePopover store={store} controller={shareController} />
+          <SaveButton store={store} action={save} />
+        </div>
+      </div>
+
       <div
         onScroll={() => editorRef.current?.refresh()}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
@@ -257,7 +266,7 @@ export function WritingPad({ store, handleRef, shareController }: WritingPadProp
             style={{ left: MARGIN_RULE }}
           />
 
-          {/* Title row: two 28px rules tall. The title text sits on the second rule. Share and Save sit at the right. */}
+          {/* Title row: two 28px rules tall. The title text sits on the second rule. */}
           <div className="relative h-14 shrink-0">
             <input
               ref={titleRef}
@@ -277,17 +286,10 @@ export function WritingPad({ store, handleRef, shareController }: WritingPadProp
                 "pad-title-reserve block h-14 w-full text-ellipsis bg-transparent pt-4 text-[1.75rem] leading-[36px] font-semibold tracking-[-0.01em] text-secondary-foreground caret-brand outline-none placeholder:font-medium placeholder:text-muted-foreground",
                 urduTitle && "urdu-title",
               )}
-              style={{ paddingRight: wide ? "12rem" : undefined }}
             />
-            {/* Desktop-class screens only (CSS, same rule as the shell). Phones use the top-bar controls. */}
-            <div className="shell-desk-only absolute top-[1.125rem] right-0 flex items-center gap-1">
-              <SharePopover store={store} controller={shareController} />
-              <SaveButton store={store} action={save} />
-            </div>
           </div>
 
-          {/* One empty 28px rule between the title and the body. Clicking it starts the body. The rules run through it.
-              The English | اردو toggle and the keyboard-layout button live here, inside the notebook. */}
+          {/* One empty 28px rule between the title and the body. Clicking it starts the body. The rules run through it. */}
           <div className="relative h-7 shrink-0">
             <div
               aria-hidden="true"
@@ -297,7 +299,6 @@ export function WritingPad({ store, handleRef, shareController }: WritingPadProp
               }}
               className="absolute inset-0 cursor-text"
             />
-            <UrduToggle />
           </div>
 
           <NoteEditor
