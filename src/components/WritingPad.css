@@ -1,0 +1,47 @@
+/*
+ * Writing pad: phone or desktop, decided the same way as the app shell (see "Mobile shell" in globals.css).
+ * Phone styles are the default. The desktop query is copied from the shell, so the two always agree. Keep them in step.
+ */
+
+/* Bottom strip: 56px plus the home-indicator inset on phones, 32px on desktop. */
+.pad-strip {
+  box-sizing: content-box;
+  height: 3.5rem;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Export button: a 44px tap target on phones, the compact 28px on desktop. */
+.pad-export {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+/* Right gutter of the ruled sheet. */
+.pad-gutter {
+  padding-right: 1rem;
+}
+
+/* The title leaves room for the Save button. */
+.pad-title-reserve {
+  padding-right: 0;
+}
+
+@media (min-width: 48rem) and (min-height: 501px), (min-width: 48rem) and (hover: hover) {
+  .pad-strip {
+    height: 2rem;
+    padding-bottom: 0;
+  }
+
+  .pad-export {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .pad-gutter {
+    padding-right: 1.5rem;
+  }
+
+  .pad-title-reserve {
+    padding-right: 9rem;
+  }
+}

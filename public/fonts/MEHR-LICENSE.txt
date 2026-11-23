@@ -1,0 +1,6 @@
+Mehr Nastaliq Web font (mehr.woff, mehr.ttf)
+Created by Muhammad Zeeshan Nasar, following the calligraphy of Nasrullah Mehr.
+Source: https://mehrtype.com/product/mehr-nastaliq-web/ (npm package "mehr")
+License: Creative Commons Attribution-ShareAlike 4.0 (CC BY-SA 4.0)
+         https://creativecommons.org/licenses/by-sa/4.0/
+The font files are used unmodified. This license covers the font only, not the rest of the app.

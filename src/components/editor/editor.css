@@ -1,0 +1,393 @@
+/*
+ * Live Markdown in the note body. Every row is 28px (1.75rem), so the ruled grid behind the text stays aligned.
+ * Everything is scoped under .note-editor, so it only touches this editor.
+ */
+
+.note-editor {
+  /* The one source for code type. Geist Mono is loaded in layout.tsx; the rest are fallbacks. */
+  --editor-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--write-font);
+  font-size: calc(1rem * var(--write-scale, 1));
+  line-height: 1.75rem;
+  color: var(--text);
+}
+
+/* The handwritten font reads small at 16px, so its body text is a touch larger. The 28px row stays the same,
+   so the ruled lines still line up. */
+:root[data-font="hand"] .note-editor {
+  font-size: calc(1.125rem * var(--write-scale, 1));
+}
+
+/* CodeMirror puts an empty inline image next to each widget. Its default is 1em tall, which would grow the row. */
+.note-editor .cm-widgetBuffer {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: top;
+}
+
+/* Inline spans never change a row's height. The 28px row comes from the .cm-line itself, whatever font a span uses. */
+.note-editor .cm-line {
+  line-height: 1.75rem;
+}
+
+.note-editor .cm-line span {
+  line-height: 0;
+}
+
+/* ---- Headings: bigger and bolder, still one 28px row each ---- */
+
+.note-editor .cm-line.md-h1 {
+  font-size: calc(1.5625rem * var(--write-scale, 1));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.note-editor .cm-line.md-h2 {
+  font-size: calc(1.3125rem * var(--write-scale, 1));
+  font-weight: 700;
+}
+
+.note-editor .cm-line.md-h3 {
+  font-size: calc(1.125rem * var(--write-scale, 1));
+  font-weight: 600;
+}
+
+/* ---- Lists: hanging indent, so wrapped text lines up after the marker ---- */
+
+.note-editor .cm-line.md-list {
+  padding-left: calc(var(--lvl, 0) * 1.5em + 1.5em);
+  text-indent: -1.5em;
+}
+
+.note-editor .md-marker,
+.note-editor .md-check,
+.note-editor .md-code-head {
+  text-indent: 0;
+}
+
+.note-editor .md-marker {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 1.5em;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.note-editor .md-marker-bullet {
+  padding-left: 0.25em;
+}
+
+.note-editor .md-marker-ol {
+  text-align: left;
+  padding-right: 0;
+}
+
+.note-editor .md-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin: 0 8px 0 0;
+  padding: 0;
+  vertical-align: -3px;
+  border: 1.5px solid var(--text-muted);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--on-accent);
+  line-height: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.note-editor .md-check:hover {
+  border-color: var(--accent);
+}
+
+.note-editor .md-check[aria-checked="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.note-editor .md-check:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.note-editor .md-icon {
+  display: block;
+}
+
+.note-editor .md-task-done {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* ---- Blockquote: a left bar and muted text ---- */
+
+.note-editor .cm-line.md-quote {
+  border-left: 3px solid var(--border);
+  padding-left: 0.9em;
+  color: var(--text-secondary);
+}
+
+/* ---- Horizontal rule: a centred hairline, clearly stronger than the ruled lines ---- */
+
+.note-editor {
+  --line-strong: light-dark(rgb(31 30 29 / 0.3), rgb(255 255 255 / 0.28));
+  --line-stronger: light-dark(rgb(31 30 29 / 0.5), rgb(255 255 255 / 0.45));
+}
+
+.note-editor .cm-line.md-hr {
+  background-image: linear-gradient(var(--line-strong), var(--line-strong));
+  background-position: center;
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+}
+
+/* ---- Fenced code: a neutral rounded block. Lines keep the grid. ---- */
+
+.note-editor .cm-line.md-code {
+  font-family: var(--editor-mono);
+  font-size: 0.875rem;
+  /* Same 28px row as prose, so the ruled grid still lines up. */
+  line-height: 1.75rem;
+  font-variant-ligatures: none;
+  tab-size: 2;
+  background-color: var(--accent-soft);
+  margin-inline: -6px;
+  padding-inline: 6px;
+  overflow-wrap: anywhere;
+}
+
+.note-editor .cm-line.md-code-first {
+  position: relative;
+  border-start-start-radius: 8px;
+  border-start-end-radius: 8px;
+}
+
+.note-editor .cm-line.md-code-last {
+  border-end-start-radius: 8px;
+  border-end-end-radius: 8px;
+}
+
+.note-editor .md-code-head {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--editor-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+  line-height: 1.75rem;
+}
+
+.note-editor .md-code-lang {
+  padding-right: 2px;
+}
+
+.note-editor .md-copy {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  outline: none;
+  transition:
+    opacity 150ms ease-out,
+    background-color 150ms ease-out,
+    color 150ms ease-out;
+}
+
+.note-editor .md-copy:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
+.note-editor .md-copy:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.note-editor .cm-line.md-code-first:hover .md-copy,
+.note-editor .cm-line.md-code-first.is-hover .md-copy,
+.note-editor .cm-line.md-code-focus .md-copy {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .note-editor .md-copy {
+    opacity: 1;
+  }
+}
+
+/* ---- Inline styles ---- */
+
+/* Markers: dimmed while the cursor is in their span. Hidden, as replaced ranges, otherwise. */
+.note-editor .md-mark {
+  color: var(--text-muted);
+}
+
+.note-editor .md-em {
+  font-style: italic;
+}
+
+/* Italic Urdu is set in Kasheeda (see globals.css). It only covers Urdu letters, so English italic is unchanged,
+   and the baseline stays the line's own (the span has line-height 0), so it sits on the same rule as the rest. */
+.note-editor .cm-urdu-line .md-em {
+  font-family: "Kasheeda", "Mehr Line", var(--write-font);
+}
+
+.note-editor .md-strong {
+  font-weight: 700;
+}
+
+/* Bold Urdu. Mehr and Kasheeda have one weight, and faux-bold is switched off for Urdu lines (it garbled joins), so
+   font-weight alone does nothing there. Thicken the strokes with a same-colour text stroke instead: it doesn't move
+   glyphs or change advances, so joining and ligatures are untouched. --urdu-bold is the one number to tune. */
+.note-editor .cm-urdu-line .md-strong {
+  --urdu-bold: 0.03em;
+  -webkit-text-stroke: var(--urdu-bold) currentColor;
+  paint-order: stroke fill;
+}
+
+.note-editor .md-strike {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.note-editor .md-code-inline {
+  font-family: var(--editor-mono);
+  font-size: 0.9em;
+  font-variant-ligatures: none;
+  tab-size: 2;
+  background-color: var(--accent-soft);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+
+.note-editor .md-link,
+.note-editor .md-url {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.note-editor .cm-placeholder {
+  position: relative;
+  top: 11px;
+  color: var(--text-muted);
+}
+
+/* ---- GFM tables: compact rows keep the ruled-paper grid aligned ---- */
+
+.note-editor .cm-line.md-table-source {
+  color: var(--text);
+}
+
+.note-editor .md-table-pipe {
+  color: var(--text-muted);
+}
+
+.note-editor .md-table-scroll {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--border) transparent;
+}
+
+.note-editor .md-table {
+  width: max-content;
+  min-width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  color: var(--text);
+  font-family: var(--write-font);
+  font-size: inherit;
+  line-height: 28px;
+}
+
+.note-editor .md-table tr {
+  height: 28px;
+}
+
+.note-editor .md-table th,
+.note-editor .md-table td {
+  box-sizing: border-box;
+  height: 28px;
+  min-width: 3rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--line-strong);
+  background: var(--pad);
+  line-height: 27px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.note-editor .md-table th {
+  font-weight: 700;
+  box-shadow: inset 0 -1px 0 var(--line-stronger);
+}
+
+.note-editor .md-table code.md-code-inline {
+  white-space: nowrap;
+}
+
+.note-editor .md-table .md-table-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* Lines with Urdu get two ruled rows (56px): Nastaliq letters are tall, and 56px keeps the ruled grid aligned. */
+.cm-content .cm-line.cm-urdu-line {
+  line-height: 3.5rem;
+  /* The FIRST font decides where the baseline lands (see "Mehr Line" in globals.css): Urdu sits 5px above the rule, like English. */
+  font-family: "Mehr Line", var(--write-font);
+}
+
+/* Urdu headings: smaller so they fit the 56px row, no tracking, no faux bold. */
+.note-editor .cm-line.cm-urdu-line.md-h1 {
+  font-size: calc(1.25rem * var(--write-scale, 1));
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.note-editor .cm-line.cm-urdu-line.md-h2 {
+  font-size: calc(1.125rem * var(--write-scale, 1));
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.note-editor .cm-line.cm-urdu-line.md-h3 {
+  font-size: calc(1rem * var(--write-scale, 1));
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.cm-content .cm-line[dir="rtl"] {
+  text-align: start;
+}

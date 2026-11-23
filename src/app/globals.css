@@ -1,0 +1,543 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Design tokens. light-dark() follows color-scheme, which data-theme sets on <html>. Light is the default; the OS
+   colour scheme is never read. */
+:root {
+  color-scheme: light;
+
+  --canvas: light-dark(#efebdf, #242423);
+  --sidebar: light-dark(#e9e4d5, #1d1d1c);
+  --pad: light-dark(#f8f5ec, #2e2e2c);
+  /* In-app logo tile: brand ink in light, a lifted ink in dark so the mark stays visible on the dark sidebar. */
+  --logo-tile: light-dark(#2b2a27, #3d3c38);
+  --text: light-dark(#141413, #f5f4ed);
+  --text-secondary: light-dark(#3d3d3a, #c2c0b6);
+  /* Light value is darker than SPEC's #73726C so it stays AA (4.5:1) on every tinted surface, including the selected row
+     and its hover. Dark value is lifted so it stays AA on the accent-soft-hover surface too. */
+  --text-muted: light-dark(#4d4c47, #b0aea6);
+  /* Neutral hairlines in both themes. No warm tint anywhere. */
+  --border: light-dark(rgb(31 30 29 / 0.12), rgb(255 255 255 / 0.1));
+  --rule: light-dark(rgb(31 30 29 / 0.07), rgb(255 255 255 / 0.06));
+  /* One neutral accent family in both themes: calm blue-grey in light, lighter blue-grey in dark. No orange or clay. */
+  --accent: light-dark(#44597a, #8fa3bf);
+  --accent-hover: light-dark(#3f5170, #a9bad1);
+  --accent-soft: light-dark(rgb(31 30 29 / 0.06), rgb(255 255 255 / 0.07));
+  --accent-soft-hover: light-dark(rgb(31 30 29 / 0.09), rgb(255 255 255 / 0.09));
+  /* Filled primary button: ink in light, blue-grey in dark. Ink text on it in dark, cream text on it in light. */
+  --primary: light-dark(#2b2a27, #8fa3bf);
+  --hover: light-dark(rgb(31 30 29 / 0.05), rgb(255 255 255 / 0.07));
+  --selected: light-dark(#d9d3c1, #2f2f2d);
+  /* Dark danger is muted so it reads red, not salmon. It clears 4.5:1 as text on the dark pad and selected row. */
+  --danger: light-dark(#b3261e, #d98a84);
+  --success: light-dark(#4a7d4c, #7fb884);
+  --warning: light-dark(#9a6a12, #e0b55c);
+  /* Solid focus rings (no /50 at use sites). Light is the blue-grey accent; dark is the same blue-grey accent.
+     Both stay at least 3:1 on every surface they sit on, including the selected row and its hover. */
+  --ring: light-dark(#44597a, #8fa3bf);
+  /* Text on the filled primary button. Cream on ink is about 13:1 in light; near-black on the blue-grey is 7.2:1 in dark. */
+  --on-accent: light-dark(#f8f5ec, #141413);
+  --selection: light-dark(rgb(68 89 122 / 0.22), rgb(143 163 191 / 0.3));
+
+  --elev-xs: 0 1px 2px rgb(20 20 19 / 0.06);
+  --elev-pad: 0 1px 2px rgb(20 20 19 / 0.04), 0 12px 32px -12px rgb(20 20 19 / 0.12);
+  --elev-menu: 0 10px 30px -8px rgb(20 20 19 / 0.22), 0 2px 6px rgb(20 20 19 / 0.06);
+  --elev-overlay: 0 20px 48px -12px rgb(20 20 19 / 0.25);
+
+  /* Writing font follows the saved pref. data-font is set on <html> before paint (see layout.tsx). */
+  --write-font: "Mehr", var(--font-patrick-hand), cursive;
+}
+
+:root[data-theme="dark"] {
+  --elev-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  --elev-pad: 0 1px 2px rgb(0 0 0 / 0.25), 0 14px 36px -12px rgb(0 0 0 / 0.5);
+  --elev-menu: 0 12px 34px -8px rgb(0 0 0 / 0.6), 0 2px 6px rgb(0 0 0 / 0.3);
+  --elev-overlay: 0 24px 56px -12px rgb(0 0 0 / 0.6);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:root[data-font="sans"] {
+  --write-font: "Mehr", var(--font-plex-sans), system-ui, sans-serif;
+}
+
+:root[data-font="serif"] {
+  --write-font: "Mehr", var(--font-plex-serif), Georgia, serif;
+}
+
+:root[data-font="mono"] {
+  --write-font: "Mehr", var(--font-plex-mono), ui-monospace, monospace;
+}
+
+/* Text size multiplies the note's type. Rows stay 28px, so the ruled grid never moves. */
+:root {
+  --write-scale: 1;
+}
+
+:root[data-size="small"] {
+  --write-scale: 0.875;
+}
+
+:root[data-size="large"] {
+  --write-scale: 1.125;
+}
+
+:root[data-size="xlarge"] {
+  --write-scale: 1.25;
+}
+
+@theme inline {
+  --color-background: var(--canvas);
+  --color-foreground: var(--text);
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-pad: var(--pad);
+  --color-card: var(--pad);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--pad);
+  --color-popover-foreground: var(--text);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--on-accent);
+  --color-secondary: var(--hover);
+  --color-secondary-foreground: var(--text-secondary);
+  --color-muted: var(--hover);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--hover);
+  --color-accent-foreground: var(--text);
+  --color-hover: var(--hover);
+  --color-selected: var(--selected);
+  --color-brand: var(--accent);
+  --color-brand-hover: var(--accent-hover);
+  --color-brand-soft: var(--accent-soft);
+  --color-brand-soft-hover: var(--accent-soft-hover);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--pad);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--ring);
+  --color-rule: var(--rule);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --font-sans: var(--font-geist-sans);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 20px;
+
+  --shadow-xs: var(--elev-xs);
+  --shadow-pad: var(--elev-pad);
+  --shadow-menu: var(--elev-menu);
+  --shadow-overlay: var(--elev-overlay);
+
+  --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+/* Rules on the 28px (1.75rem) line grid of the 16px / 1.75 text. The baseline sits 19px into each
+   line, so the 1px rule at 24px sits about 5px under it, like a notepad rule under the text. Origin and
+   clip are the content box, so the grid starts at the first text line whatever the top padding, and
+   "local" attachment keeps the rules moving with the text when the pad scrolls. */
+.notepad {
+  font-family: var(--write-font);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 1.5rem,
+    var(--rule) 1.5rem 1.5625rem,
+    transparent 1.5625rem 1.75rem
+  );
+  background-origin: content-box;
+  background-clip: content-box;
+  background-attachment: local;
+}
+
+/* Desktop sidebar. One element animates its width; the data-sidebar attribute on <html> (set before first paint
+   by layout.tsx) decides the state, so a reload never animates. Rules are unlayered on purpose: they must beat utilities.
+   --sb-inset is the side inset (12px open, 8px rail). It is registered so it animates with the width, and the sections
+   read it through .sb-inset. Icons sit in a 40px column that is centred in both states. */
+@property --sb-inset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0.75rem;
+}
+
+/* Layout containment: the sidebar's own layout never invalidates the pad, and the pad's never reaches the sidebar. */
+.sb-aside {
+  --sb-inset: 0.75rem;
+  width: 17rem;
+  contain: layout style;
+  transition:
+    width 220ms cubic-bezier(0.2, 0, 0, 1),
+    --sb-inset 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.sb-aside > * {
+  width: 17rem;
+  flex-shrink: 0;
+}
+
+.sb-inset {
+  padding-inline: var(--sb-inset, 0.75rem);
+}
+
+.sb-fade {
+  transition:
+    opacity 160ms ease-out,
+    transform 220ms cubic-bezier(0.2, 0, 0, 1),
+    visibility 220ms;
+}
+
+/* New note: a soft boxed row, 40px tall, full width. Collapsed it becomes a 36px square centred in the 40px icon
+   column (2px margin), so its icon sits where the rail's other icons sit. */
+.sb-new {
+  width: 100%;
+  margin-left: 0;
+  padding-left: 0.25rem;
+  transition:
+    width 220ms cubic-bezier(0.2, 0, 0, 1),
+    padding-left 220ms cubic-bezier(0.2, 0, 0, 1),
+    margin-left 220ms cubic-bezier(0.2, 0, 0, 1),
+    background-color 150ms ease-out;
+}
+
+.sb-rail-only {
+  display: none;
+}
+
+html[data-sidebar="collapsed"] .sb-aside {
+  --sb-inset: 0.5rem;
+  width: 3.5rem;
+}
+
+html[data-sidebar="collapsed"] .sb-aside .sb-fade {
+  opacity: 0;
+  transform: translateX(-6px);
+  visibility: hidden;
+}
+
+html[data-sidebar="collapsed"] .sb-aside .sb-new {
+  width: 2.25rem;
+  margin-left: 0.125rem;
+  padding-left: 0;
+}
+
+html[data-sidebar="collapsed"] .sb-aside .sb-rail-only {
+  display: flex;
+}
+
+/* A note row that appears after the list has settled. Opacity only, so no text moves. */
+.sb-row-in {
+  animation: sb-row-in 160ms ease-out both;
+}
+
+@keyframes sb-row-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade the whole view so the text, ruled paper and menus change together. */
+html.theme-crossfade::view-transition {
+  pointer-events: none;
+}
+
+html.theme-crossfade::view-transition-group(root),
+html.theme-crossfade::view-transition-old(root),
+html.theme-crossfade::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Mobile shell (Agent E). Phones are below md, or a short landscape phone (height 500px or less, no hover).
+   The desktop sidebar only appears on desktop-class screens, so an 844px-wide landscape phone keeps the phone shell. ---- */
+.shell-desk-only {
+  display: none;
+}
+
+.shell-phone-only {
+  display: flex;
+}
+
+.shell-root {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.shell-main {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+  contain: layout style;
+}
+
+/* Phones: the pad is full-bleed under the top bar, so it drops its card frame. */
+.shell-main > * {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (min-width: 48rem) and (min-height: 501px), (min-width: 48rem) and (hover: hover) {
+  .shell-desk-only {
+    display: flex;
+  }
+
+  .shell-phone-only {
+    display: none;
+  }
+
+  .shell-main {
+    padding: 0.75rem;
+  }
+
+  .shell-main > * {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-pad);
+  }
+}
+
+/* AppShell applies this only while the editor route is visible. */
+html.editor-scroll-lock,
+html.editor-scroll-lock body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.shell-root {
+  height: 100dvh;
+  overscroll-behavior: none;
+}
+
+/* Touch: no grey tap flash, no double-tap zoom delay on controls. Zoom itself stays enabled. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+label,
+summary,
+[role="button"],
+[role="menuitem"],
+[role="option"] {
+  touch-action: manipulation;
+}
+
+/* iOS zooms the page when a focused field is under 16px. Only text inputs without their own size class. */
+@media (max-width: 47.99rem) {
+  @layer base {
+    input:not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
+}
+
+/* ── Auth pages (sign in, create account, forgot and reset password). Owned by the auth block only. ── */
+.auth-serif {
+  font-family: var(--font-plex-serif), Georgia, serif;
+}
+
+.auth-enter {
+  animation: auth-enter 250ms var(--ease-soft) both;
+}
+
+@keyframes auth-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Height follows the content with a short transition (set from JS, see AutoHeight). */
+.auth-height {
+  overflow: clip;
+  overflow-clip-margin: 8px;
+  transition: height 250ms var(--ease-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-enter {
+    animation: none;
+  }
+  .auth-height {
+    transition: none;
+  }
+}
+
+/* Mehr Nastaliq Web (Muhammad Zeeshan Nasar, calligraphy of Nasrullah Mehr), CC BY-SA 4.0. Urdu text only:
+   unicode-range keeps English in the chosen writing font. */
+@font-face {
+  font-family: "Mehr";
+  src:
+    url("/fonts/mehr.woff") format("woff"),
+    url("/fonts/mehr.ttf") format("truetype");
+  font-display: swap;
+  /* Nastaliq letters are small for their size; scale them up so Urdu reads as large as the English beside it.
+     115% (was 165%). To make Urdu bigger or smaller change this number AND the other three faces below. */
+  size-adjust: 115%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* ---- Where Urdu sits on the ruled lines ----
+   The browser puts a line's baseline from the metrics of the line's FIRST font. "Mehr" above is limited to Urdu
+   letters, so Chrome skips it for that job and the English font decides, which leaves Nastaliq floating in the middle
+   of its two-row line. Mehr's own metrics are also huge and different on Windows and Mac (win 3000/1000, hhea 2200/1300),
+   which is the "empty space" in the font.
+
+   These three faces are the same font file, limited to Urdu plus the space character (the space is what makes the
+   browser use the face for the baseline). They override ascent/descent so the baseline is the same on every platform:
+     baseline = half the line height + (ascent - descent) / 2, with ascent/descent as % of the size-adjusted font size.
+   Ruled paper has its rule 24px into each 28px row, so Urdu is set 5px above it, like the English text.
+   Keep size-adjust identical in all four faces. Browsers without the override descriptors just use Mehr's own metrics. */
+@font-face {
+  font-family: "Mehr Line"; /* body lines and headings: 56px = two ruled rows */
+  src:
+    url("/fonts/mehr.woff") format("woff"),
+    url("/fonts/mehr.ttf") format("truetype");
+  font-display: swap;
+  size-adjust: 115%;
+  ascent-override: 245%;
+  descent-override: 55%;
+  line-gap-override: 0%;
+  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Mehr Title"; /* the note title input: 56px, baseline on the second rule */
+  src:
+    url("/fonts/mehr.woff") format("woff"),
+    url("/fonts/mehr.ttf") format("truetype");
+  font-display: swap;
+  size-adjust: 115%;
+  ascent-override: 205%;
+  descent-override: 55%;
+  line-gap-override: 0%;
+  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Mehr Row"; /* sidebar rows: Urdu centred in its row */
+  src:
+    url("/fonts/mehr.woff") format("woff"),
+    url("/fonts/mehr.ttf") format("truetype");
+  font-display: swap;
+  size-adjust: 115%;
+  ascent-override: 100%;
+  descent-override: 40%;
+  line-gap-override: 0%;
+  unicode-range: U+0020, U+00A0, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* ---- Italic Urdu: Kasheeda ----
+   Nastaliq has no true italic, so the browser would just skew Mehr. Italic Urdu (*text* in a note) uses a Kasheeda
+   font instead: long, elongated strokes. Declared as the italic style of its own family so the browser never skews it,
+   and limited to Urdu letters so English italic stays in the writing font.
+
+   The font file is NOT bundled (see KASHEEDA-SETUP.md): add public/fonts/kasheeda.woff2, or install
+   "Jameel Noori Nastaleeq Kasheeda" on the device (local() is tried first). If neither is found, italic Urdu falls
+   back to plain Mehr, nothing breaks.
+   size-adjust: tune this one number until Kasheeda looks the same size as the Mehr text around it.
+   Tuned: 120% matches Mehr's body size in mixed lines, 135% overshoots. 125% because Kasheeda's strokes are thinner
+   and benefit from the extra size. */
+@font-face {
+  font-family: "Kasheeda";
+  font-style: italic;
+  src:
+    local("Jameel Noori Nastaleeq Kasheeda"),
+    local("JameelNooriNastaleeqKasheeda"),
+    url("/fonts/kasheeda.woff2") format("woff2");
+  font-display: swap;
+  size-adjust: 125%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+.urdu-label {
+  font-family: "Mehr", system-ui, sans-serif;
+}
+
+/* Mehr has one weight; without this the browser fakes a bold for the semibold title, which smears Nastaliq. */
+input[aria-label="Note title"] {
+  font-synthesis-weight: none;
+}
+
+/* Urdu must never be letter-spaced or faux-bolded: either one breaks the joining and ligatures Nastaliq relies on,
+   which is what turned Urdu headings into garbled shapes. !important beats Tailwind's tracking-* utilities. */
+.urdu-title,
+.urdu-row,
+.cm-urdu-line,
+.cm-urdu-line *,
+.shared-note-note-header h1[lang="ur"] {
+  letter-spacing: 0 !important;
+  font-synthesis-weight: none;
+  font-variant-ligatures: normal;
+}
+
+/* Urdu note title: sits in the 56px title row (two ruled rows) with room for tall Nastaliq strokes. */
+input.urdu-title {
+  font-family: "Mehr Title", var(--write-font);
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: 56px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Urdu row in the sidebar: taller row, right-aligned for RTL, ellipsis on the correct side. */
+.urdu-row {
+  font-family: "Mehr Row", var(--font-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 3rem;
+  text-align: start;
+}
